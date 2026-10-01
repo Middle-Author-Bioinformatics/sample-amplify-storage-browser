@@ -27,7 +27,6 @@ function App() {
           <>
             <header className="header">
               <div>
-                <h1>MAB Portal</h1>
                 <p className="welcome">
                   Secure data transfer to Middle Author Bioinformatics
                 </p>
