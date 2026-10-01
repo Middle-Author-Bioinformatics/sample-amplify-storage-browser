@@ -1,32 +1,98 @@
-import {
-  createAmplifyAuthAdapter,
-  createStorageBrowser,
-} from '@aws-amplify/ui-react-storage/browser';
-import '@aws-amplify/ui-react-storage/styles.css';
 import './App.css';
 
 import config from '../amplify_outputs.json';
 import { Amplify } from 'aws-amplify';
 import { Authenticator, Button } from '@aws-amplify/ui-react';
-Amplify.configure(config);
+import { FileUploader } from '@aws-amplify/ui-react-storage';
 
-const { StorageBrowser } = createStorageBrowser({
-  config: createAmplifyAuthAdapter(),
-});
+import '@aws-amplify/ui-react/styles.css';
+import '@aws-amplify/ui-react-storage/styles.css';
+
+Amplify.configure(config);
 
 function App() {
   return (
-    <Authenticator>
-      {({ signOut, user }) => (
-        <>
-          <div className="header">
-            <h1>{`Hello ${user?.username}`}</h1>
-            <Button onClick={signOut}>Sign out</Button>
-          </div>
-          <StorageBrowser />
-        </>
-      )}
-    </Authenticator>
+    <div className="portal">
+
+      <div className="brand-bar">
+        <img
+          src="/mab-logo.png"
+          alt="Middle Author Bioinformatics"
+          className="mab-logo"
+        />
+      </div>
+
+      <Authenticator>
+        {({ signOut, user }) => (
+          <>
+            <header className="header">
+              <div>
+                <h1>MAB Portal</h1>
+                <p className="welcome">
+                  Secure data transfer to Middle Author Bioinformatics
+                </p>
+              </div>
+
+              <div className="user-controls">
+                <span>
+                  {user?.signInDetails?.loginId || user?.username}
+                </span>
+
+                <Button onClick={signOut}>
+                  Sign out
+                </Button>
+              </div>
+            </header>
+
+            <main className="upload-container">
+
+              <div className="upload-card">
+
+                <h2>Upload project files</h2>
+
+                <p className="upload-description">
+                  Drag and drop your sequencing data below, or select files
+                  from your computer.
+                </p>
+
+                <FileUploader
+                  acceptedFileTypes={['*']}
+                  path={({ identityId }) =>
+                    `private/${identityId}/`
+                  }
+                  maxFileCount={1000}
+                  isResumable
+                  displayText={{
+                    dropFilesText: 'Drop files here or',
+                    browseFilesText: 'Choose files',
+                    getFilesUploadedText(count) {
+                      return `${count} ${
+                        count === 1 ? 'file' : 'files'
+                      } uploaded successfully`;
+                    },
+                    getUploadingText(percentage) {
+                      return `Uploading: ${percentage}%`;
+                    },
+                  }}
+                />
+
+                <p className="upload-note">
+                  Please keep this browser window open until all uploads
+                  are complete.
+                </p>
+
+              </div>
+
+            </main>
+
+            <footer>
+              © Middle Author Bioinformatics
+            </footer>
+          </>
+        )}
+      </Authenticator>
+
+    </div>
   );
 }
 
